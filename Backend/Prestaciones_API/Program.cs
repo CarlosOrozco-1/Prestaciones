@@ -10,6 +10,17 @@ var builder = WebApplication.CreateBuilder(args);
 //  CONFIGURACIÓN DE SERVICIOS
 // =======================================
 
+// 🔹 Configuración CORS para Angular
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AngularApp", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 // 🔹 Conexión a Oracle mediante factory
 builder.Services.AddSingleton<OracleConnectionFactory>();
 
@@ -27,6 +38,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// 🔹 Habilitar CORS
+app.UseCors("AngularApp");
 
 app.UseHttpsRedirection();
 

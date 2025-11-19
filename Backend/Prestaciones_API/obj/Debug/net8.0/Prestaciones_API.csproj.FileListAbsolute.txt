@@ -45,3 +45,46 @@ D:\Carlos Orozco DTI\Documents\Proyecto-prestaciones\Backend\Prestaciones_API\bi
 D:\Carlos Orozco DTI\Documents\Proyecto-prestaciones\Backend\Prestaciones_API\bin\Debug\net8.0\runtimes\osx\lib\net8.0\System.DirectoryServices.Protocols.dll
 D:\Carlos Orozco DTI\Documents\Proyecto-prestaciones\Backend\Prestaciones_API\bin\Debug\net8.0\runtimes\win\lib\net8.0\System.DirectoryServices.Protocols.dll
 D:\Carlos Orozco DTI\Documents\Proyecto-prestaciones\Backend\Prestaciones_API\bin\Debug\net8.0\runtimes\win\lib\net8.0\System.Security.Cryptography.Pkcs.dll
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\bin\Debug\net8.0\appsettings.Development.json
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\bin\Debug\net8.0\appsettings.json
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\bin\Debug\net8.0\Prestaciones_API.staticwebassets.endpoints.json
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\bin\Debug\net8.0\Prestaciones_API.exe
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\bin\Debug\net8.0\Prestaciones_API.deps.json
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\bin\Debug\net8.0\Prestaciones_API.runtimeconfig.json
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\bin\Debug\net8.0\Prestaciones_API.dll
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\bin\Debug\net8.0\Prestaciones_API.pdb
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\bin\Debug\net8.0\Microsoft.OpenApi.dll
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\bin\Debug\net8.0\Oracle.ManagedDataAccess.dll
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\bin\Debug\net8.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\bin\Debug\net8.0\System.Configuration.ConfigurationManager.dll
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\bin\Debug\net8.0\System.Diagnostics.PerformanceCounter.dll
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\bin\Debug\net8.0\System.DirectoryServices.Protocols.dll
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\bin\Debug\net8.0\System.Security.Cryptography.Pkcs.dll
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\bin\Debug\net8.0\System.Security.Cryptography.ProtectedData.dll
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\bin\Debug\net8.0\runtimes\win\lib\net8.0\System.Diagnostics.PerformanceCounter.dll
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\bin\Debug\net8.0\runtimes\linux\lib\net8.0\System.DirectoryServices.Protocols.dll
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\bin\Debug\net8.0\runtimes\osx\lib\net8.0\System.DirectoryServices.Protocols.dll
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\bin\Debug\net8.0\runtimes\win\lib\net8.0\System.DirectoryServices.Protocols.dll
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\bin\Debug\net8.0\runtimes\win\lib\net8.0\System.Security.Cryptography.Pkcs.dll
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\obj\Debug\net8.0\Prestaciones_API.csproj.AssemblyReference.cache
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\obj\Debug\net8.0\Prestaciones_API.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\obj\Debug\net8.0\Prestaciones_API.AssemblyInfoInputs.cache
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\obj\Debug\net8.0\Prestaciones_API.AssemblyInfo.cs
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\obj\Debug\net8.0\Prestaciones_API.csproj.CoreCompileInputs.cache
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\obj\Debug\net8.0\Prestaciones_API.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\obj\Debug\net8.0\Prestaciones_API.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\obj\Debug\net8.0\Prestaciones_API.sourcelink.json
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\obj\Debug\net8.0\scopedcss\bundle\Prestaciones_API.styles.css
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\obj\Debug\net8.0\staticwebassets.build.json
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\obj\Debug\net8.0\staticwebassets.build.json.cache
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\obj\Debug\net8.0\staticwebassets.development.json
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\obj\Debug\net8.0\staticwebassets.build.endpoints.json
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\obj\Debug\net8.0\Prestaci.D4B977D0.Up2Date
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\obj\Debug\net8.0\Prestaciones_API.dll
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\obj\Debug\net8.0\refint\Prestaciones_API.dll
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\obj\Debug\net8.0\Prestaciones_API.pdb
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\obj\Debug\net8.0\Prestaciones_API.genruntimeconfig.cache
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\obj\Debug\net8.0\ref\Prestaciones_API.dll
+C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

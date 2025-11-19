@@ -1,0 +1,116 @@
+<div class="page">
+  <h1>Cálculo de Liquidación</h1>
+
+  <!-- Mensajes -->
+  <div *ngIf="successMessage" class="alert success">
+    {{ successMessage }}
+  </div>
+
+  <div *ngIf="errorMessage" class="alert error">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Formulario -->
+  <section class="card">
+    <h2>Datos para el cálculo</h2>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-grid">
+
+      <!-- Selección de empleado -->
+      <label>
+        Colaborador
+        <select formControlName="idEmpleado">
+          <option [ngValue]="null">-- Selecciona un colaborador --</option>
+          <option *ngFor="let emp of empleados" [ngValue]="emp.idEmpleado">
+            {{ emp.idEmpleado }} - {{ emp.nombres }} {{ emp.apellidos }} ({{ emp.dpi }})
+          </option>
+        </select>
+        <span class="error" *ngIf="hasError('idEmpleado', 'required')">
+          Debes seleccionar un colaborador.
+        </span>
+      </label>
+
+      <!-- Fecha de egreso -->
+      <label>
+        Fecha de egreso
+        <input type="date" formControlName="fechaEgreso" />
+        <span class="error" *ngIf="hasError('fechaEgreso', 'required')">
+          La fecha de egreso es obligatoria.
+        </span>
+      </label>
+
+      <div class="form-actions">
+        <button type="submit" [disabled]="loadingCalculo || loadingEmpleados">
+          {{ loadingCalculo ? 'Calculando...' : 'Calcular liquidación' }}
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Resultado -->
+  <section class="card" *ngIf="resultado">
+    <h2>Resultado del cálculo</h2>
+
+    <div class="result-grid">
+      <div>
+        <strong>ID liquidación:</strong> {{ resultado.idLiquidacion }}
+      </div>
+      <div>
+        <strong>ID empleado:</strong> {{ resultado.idEmpleado }}
+      </div>
+      <div>
+        <strong>Fecha cálculo:</strong> {{ resultado.fechaCalculo | date: 'yyyy-MM-dd HH:mm' }}
+      </div>
+      <div>
+        <strong>Fecha egreso:</strong> {{ resultado.fechaEgreso | date: 'yyyy-MM-dd' }}
+      </div>
+      <div>
+        <strong>Días relación:</strong> {{ resultado.diasRelacion }}
+      </div>
+    </div>
+
+    <table class="tabla-rubros">
+      <thead>
+        <tr>
+          <th>Concepto</th>
+          <th>Monto (Q)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Salario base de cálculo</td>
+          <td>{{ resultado.salarioDevengado | number:'1.2-2' }}</td>
+        </tr>
+        <tr>
+          <td>Indemnización</td>
+          <td>{{ resultado.indemnizacion | number:'1.2-2' }}</td>
+        </tr>
+        <tr>
+          <td>Vacaciones</td>
+          <td>{{ resultado.vacaciones | number:'1.2-2' }}</td>
+        </tr>
+        <tr>
+          <td>Aguinaldo</td>
+          <td>{{ resultado.aguinaldo | number:'1.2-2' }}</td>
+        </tr>
+        <tr>
+          <td>Bono 14</td>
+          <td>{{ resultado.bono14 | number:'1.2-2' }}</td>
+        </tr>
+        <tr>
+          <td>Ventajas económicas</td>
+          <td>{{ resultado.ventajasEconomicas | number:'1.2-2' }}</td>
+        </tr>
+        <tr class="total-row">
+          <td><strong>Total a pagar</strong></td>
+          <td><strong>{{ resultado.totalPagar | number:'1.2-2' }}</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Sin resultado aún -->
+  <section class="card" *ngIf="!resultado && !loadingCalculo">
+    <p>Selecciona un colaborador y una fecha de egreso para calcular la liquidación.</p>
+  </section>
+</div>

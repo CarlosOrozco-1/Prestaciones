@@ -1,0 +1,35 @@
+<div class="page">
+  <h1>Gestión de empleados</h1>
+
+  <!-- Mensajes de estado -->
+  <div *ngIf="loading">Cargando empleados...</div>
+  <div *ngIf="errorMessage" style="color: red;">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Tabla de empleados -->
+  <table *ngIf="!loading && empleados.length > 0" border="1" cellpadding="4">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>DPI</th>
+        <th>Nombre</th>
+        <th>Fecha ingreso</th>
+        <th>Salario base</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let emp of empleados">
+        <td>{{ emp.idEmpleado }}</td>
+        <td>{{ emp.dpi }}</td>
+        <td>{{ emp.nombres }} {{ emp.apellidos }}</td>
+        <td>{{ emp.fechaIngreso | date:'yyyy-MM-dd' }}</td>
+        <td>{{ emp.salarioBase }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="!loading && empleados.length === 0">
+    No hay empleados registrados todavía.
+  </div>
+</div>
