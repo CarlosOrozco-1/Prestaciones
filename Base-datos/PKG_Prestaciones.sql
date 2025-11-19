@@ -1,0 +1,68 @@
+------------------------------------------------------------
+-- FASE 1 - PASO 2: PAQUETE PKG_PRESTACIONES (ESPECIFICACIÓN)
+------------------------------------------------------------
+CREATE OR REPLACE PACKAGE PKG_PRESTACIONES AS
+
+  -- Cursor genérico para devolver resultados a backend
+  TYPE T_CURSOR IS REF CURSOR;
+
+  --------------------------------------------------------
+  -- 1) CRUD BÁSICO DE EMPLEADOS
+  --------------------------------------------------------
+
+  -- Crear empleado
+  PROCEDURE SP_CREAR_EMPLEADO (
+    P_DPI             IN EMPLEADOS.DPI%TYPE,
+    P_NOMBRES         IN EMPLEADOS.NOMBRES%TYPE,
+    P_APELLIDOS       IN EMPLEADOS.APELLIDOS%TYPE,
+    P_FECHA_INGRESO   IN EMPLEADOS.FECHA_INGRESO%TYPE,
+    P_SALARIO_BASE    IN EMPLEADOS.SALARIO_BASE%TYPE,
+    P_PROM_COMISIONES IN EMPLEADOS.PROM_COMISIONES%TYPE DEFAULT NULL,
+    P_BONO_INCENTIVO  IN EMPLEADOS.BONO_INCENTIVO%TYPE  DEFAULT NULL,
+    P_ID_EMPLEADO_OUT OUT EMPLEADOS.ID_EMPLEADO%TYPE
+  );
+
+  -- Actualizar empleado (incluye FECHA_EGRESO y ESTADO)
+  PROCEDURE SP_ACTUALIZAR_EMPLEADO (
+    P_ID_EMPLEADO     IN EMPLEADOS.ID_EMPLEADO%TYPE,
+    P_DPI             IN EMPLEADOS.DPI%TYPE,
+    P_NOMBRES         IN EMPLEADOS.NOMBRES%TYPE,
+    P_APELLIDOS       IN EMPLEADOS.APELLIDOS%TYPE,
+    P_FECHA_INGRESO   IN EMPLEADOS.FECHA_INGRESO%TYPE,
+    P_FECHA_EGRESO    IN EMPLEADOS.FECHA_EGRESO%TYPE,
+    P_SALARIO_BASE    IN EMPLEADOS.SALARIO_BASE%TYPE,
+    P_PROM_COMISIONES IN EMPLEADOS.PROM_COMISIONES%TYPE,
+    P_BONO_INCENTIVO  IN EMPLEADOS.BONO_INCENTIVO%TYPE,
+    P_ESTADO          IN EMPLEADOS.ESTADO%TYPE
+  );
+
+  -- Obtener un empleado por ID
+  PROCEDURE SP_OBTENER_EMPLEADO (
+    P_ID_EMPLEADO IN EMPLEADOS.ID_EMPLEADO%TYPE,
+    P_CURSOR      OUT T_CURSOR
+  );
+
+  -- Listar empleados (todos)
+  PROCEDURE SP_LISTAR_EMPLEADOS (
+    P_CURSOR OUT T_CURSOR
+  );
+
+  --------------------------------------------------------
+  -- 2) CÁLCULO Y REGISTRO DE LIQUIDACIONES
+  --------------------------------------------------------
+
+  -- Calcula prestaciones, inserta en LIQUIDACIONES y devuelve el registro
+  PROCEDURE SP_CALCULAR_LIQ_EMPLEADO (
+    P_ID_EMPLEADO  IN EMPLEADOS.ID_EMPLEADO%TYPE,
+    P_FECHA_EGRESO IN DATE,
+    P_CURSOR       OUT T_CURSOR
+  );
+
+  -- Listar liquidaciones por empleado (historial)
+  PROCEDURE SP_LISTAR_LIQ_POR_EMPLEADO (
+    P_ID_EMPLEADO IN EMPLEADOS.ID_EMPLEADO%TYPE,
+    P_CURSOR      OUT T_CURSOR
+  );
+
+END PKG_PRESTACIONES;
+/
