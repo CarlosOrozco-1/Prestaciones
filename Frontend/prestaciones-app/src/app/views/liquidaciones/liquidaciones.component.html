@@ -1,116 +1,221 @@
-<div class="page">
-  <h1>Cálculo de Liquidación</h1>
+<div class="liquidaciones-container">
+  <div class="header">
+    <h1>Cálculo de Liquidación Laboral</h1>
+    <button 
+      *ngIf="tieneResultado"
+      class="btn btn-secondary" 
+      (click)="nuevaLiquidacion()"
+      [disabled]="loadingCalculo">
+      <i class="icon">🔄</i>
+      Nueva Liquidación
+    </button>
+  </div>
 
   <!-- Mensajes -->
-  <div *ngIf="successMessage" class="alert success">
+  <div *ngIf="errorMessage" class="alert alert-error">
+    <i class="icon">⚠️</i>
+    {{ errorMessage }}
+  </div>
+  <div *ngIf="successMessage" class="alert alert-success">
+    <i class="icon">✅</i>
     {{ successMessage }}
   </div>
 
-  <div *ngIf="errorMessage" class="alert error">
-    {{ errorMessage }}
+  <!-- Loading -->
+  <div *ngIf="loadingEmpleados" class="loading">
+    <div class="spinner"></div>
+    <p>Cargando empleados...</p>
   </div>
 
-  <!-- Formulario -->
-  <section class="card">
-    <h2>Datos para el cálculo</h2>
-
-    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-grid">
-
-      <!-- Selección de empleado -->
-      <label>
-        Colaborador
-        <select formControlName="idEmpleado">
-          <option [ngValue]="null">-- Selecciona un colaborador --</option>
-          <option *ngFor="let emp of empleados" [ngValue]="emp.idEmpleado">
-            {{ emp.idEmpleado }} - {{ emp.nombres }} {{ emp.apellidos }} ({{ emp.dpi }})
-          </option>
-        </select>
-        <span class="error" *ngIf="hasError('idEmpleado', 'required')">
-          Debes seleccionar un colaborador.
-        </span>
-      </label>
-
-      <!-- Fecha de egreso -->
-      <label>
-        Fecha de egreso
-        <input type="date" formControlName="fechaEgreso" />
-        <span class="error" *ngIf="hasError('fechaEgreso', 'required')">
-          La fecha de egreso es obligatoria.
-        </span>
-      </label>
-
-      <div class="form-actions">
-        <button type="submit" [disabled]="loadingCalculo || loadingEmpleados">
-          {{ loadingCalculo ? 'Calculando...' : 'Calcular liquidación' }}
-        </button>
+  <!-- Formulario de Cálculo -->
+  <div class="form-section" *ngIf="!loadingEmpleados">
+    <div class="card">
+      <div class="card-header">
+        <h2>Datos para el Cálculo</h2>
+        <p>Selecciona al empleado y la fecha de egreso para calcular su liquidación</p>
       </div>
-    </form>
-  </section>
+      
+      <form [formGroup]="liquidacionForm" (ngSubmit)="onSubmit()" class="card-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="idEmpleado">Empleado *</label>
+            <select 
+              id="idEmpleado" 
+              formControlName="idEmpleado"
+              [class.error]="hasError('idEmpleado', 'required')">
+              <option value="">-- Seleccionar Empleado --</option>
+              <option 
+                *ngFor="let empleado of empleados" 
+                [value]="empleado.idEmpleado">
+                {{ empleado.nombres }} {{ empleado.apellidos }} ({{ empleado.dpi }})
+              </option>
+            </select>
+            <div *ngIf="hasError('idEmpleado', 'required')" class="error-message">
+              Debe seleccionar un empleado
+            </div>
+          </div>
 
-  <!-- Resultado -->
-  <section class="card" *ngIf="resultado">
-    <h2>Resultado del cálculo</h2>
+          <div class="form-group">
+            <label for="fechaEgreso">Fecha de Egreso *</label>
+            <input 
+              id="fechaEgreso"
+              type="date" 
+              formControlName="fechaEgreso"
+              [class.error]="hasError('fechaEgreso', 'required')">
+            <div *ngIf="hasError('fechaEgreso', 'required')" class="error-message">
+              La fecha de egreso es obligatoria
+            </div>
+          </div>
+        </div>
 
-    <div class="result-grid">
-      <div>
-        <strong>ID liquidación:</strong> {{ resultado.idLiquidacion }}
+        <!-- Información del Empleado Seleccionado -->
+        <div *ngIf="empleadoSeleccionado" class="empleado-info">
+          <h3>Información del Empleado</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <strong>Nombre:</strong> 
+              {{ empleadoSeleccionado.nombres }} {{ empleadoSeleccionado.apellidos }}
+            </div>
+            <div class="info-item">
+              <strong>DPI:</strong> 
+              {{ empleadoSeleccionado.dpi }}
+            </div>
+            <div class="info-item">
+              <strong>Fecha de Ingreso:</strong> 
+              {{ formatDate(empleadoSeleccionado.fechaIngreso) }}
+            </div>
+            <div class="info-item">
+              <strong>Salario Base:</strong> 
+              {{ formatCurrency(empleadoSeleccionado.salarioBase) }}
+            </div>
+            <div class="info-item" *ngIf="empleadoSeleccionado.promComisiones">
+              <strong>Promedio Comisiones:</strong> 
+              {{ formatCurrency(empleadoSeleccionado.promComisiones) }}
+            </div>
+            <div class="info-item" *ngIf="empleadoSeleccionado.bonoIncentivo">
+              <strong>Bono Incentivo:</strong> 
+              {{ formatCurrency(empleadoSeleccionado.bonoIncentivo) }}
+            </div>
+            <div class="info-item" *ngIf="liquidacionForm.value.fechaEgreso">
+              <strong>Días de Relación Laboral:</strong> 
+              {{ calcularDiasRelacion() }} días
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button 
+            type="button" 
+            class="btn btn-secondary" 
+            (click)="limpiarFormulario()"
+            [disabled]="loadingCalculo">
+            Limpiar
+          </button>
+          <button 
+            type="submit" 
+            class="btn btn-primary" 
+            [disabled]="!isFormValid || loadingCalculo">
+            <span *ngIf="loadingCalculo" class="spinner-sm"></span>
+            <i *ngIf="!loadingCalculo" class="icon">💰</i>
+            {{ loadingCalculo ? 'Calculando...' : 'Calcular Liquidación' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Resultados de Liquidación -->
+  <div *ngIf="resultado" class="results-section">
+    <div class="card">
+      <div class="card-header">
+        <h2>Resultado de Liquidación</h2>
+        <p>{{ empleadoActual?.nombres }} {{ empleadoActual?.apellidos }}</p>
       </div>
-      <div>
-        <strong>ID empleado:</strong> {{ resultado.idEmpleado }}
-      </div>
-      <div>
-        <strong>Fecha cálculo:</strong> {{ resultado.fechaCalculo | date: 'yyyy-MM-dd HH:mm' }}
-      </div>
-      <div>
-        <strong>Fecha egreso:</strong> {{ resultado.fechaEgreso | date: 'yyyy-MM-dd' }}
-      </div>
-      <div>
-        <strong>Días relación:</strong> {{ resultado.diasRelacion }}
+      
+      <div class="card-body">
+        <div class="results-grid">
+          <!-- Información General -->
+          <div class="result-section">
+            <h3>Información General</h3>
+            <div class="result-item">
+              <span class="label">ID Liquidación:</span>
+              <span class="value">{{ resultado.idLiquidacion }}</span>
+            </div>
+            <div class="result-item">
+              <span class="label">Fecha de Cálculo:</span>
+              <span class="value">{{ formatDate(resultado.fechaCalculo) }}</span>
+            </div>
+            <div class="result-item">
+              <span class="label">Fecha de Egreso:</span>
+              <span class="value">{{ formatDate(resultado.fechaEgreso) }}</span>
+            </div>
+            <div class="result-item">
+              <span class="label">Días de Relación:</span>
+              <span class="value">{{ resultado.diasRelacion }} días</span>
+            </div>
+          </div>
+
+          <!-- Conceptos de Liquidación -->
+          <div class="result-section">
+            <h3>Conceptos de Liquidación</h3>
+            <div class="result-item">
+              <span class="label">Salario Devengado:</span>
+              <span class="value amount">{{ formatCurrency(resultado.salarioDevengado) }}</span>
+            </div>
+            <div class="result-item">
+              <span class="label">Indemnización:</span>
+              <span class="value amount">{{ formatCurrency(resultado.indemnizacion) }}</span>
+            </div>
+            <div class="result-item">
+              <span class="label">Vacaciones:</span>
+              <span class="value amount">{{ formatCurrency(resultado.vacaciones) }}</span>
+            </div>
+            <div class="result-item">
+              <span class="label">Aguinaldo:</span>
+              <span class="value amount">{{ formatCurrency(resultado.aguinaldo) }}</span>
+            </div>
+            <div class="result-item">
+              <span class="label">Bono 14:</span>
+              <span class="value amount">{{ formatCurrency(resultado.bono14) }}</span>
+            </div>
+            <div class="result-item">
+              <span class="label">Ventajas Económicas:</span>
+              <span class="value amount">{{ formatCurrency(resultado.ventajasEconomicas) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Total -->
+        <div class="total-section">
+          <div class="total-item">
+            <span class="label">TOTAL A PAGAR:</span>
+            <span class="value total-amount">{{ formatCurrency(resultado.totalPagar) }}</span>
+          </div>
+        </div>
+
+        <!-- Acciones de Resultado -->
+        <div class="result-actions">
+          <button class="btn btn-secondary" onclick="window.print()">
+            <i class="icon">🖨️</i>
+            Imprimir
+          </button>
+          <button class="btn btn-primary" (click)="nuevaLiquidacion()">
+            <i class="icon">➕</i>
+            Nueva Liquidación
+          </button>
+        </div>
       </div>
     </div>
+  </div>
 
-    <table class="tabla-rubros">
-      <thead>
-        <tr>
-          <th>Concepto</th>
-          <th>Monto (Q)</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Salario base de cálculo</td>
-          <td>{{ resultado.salarioDevengado | number:'1.2-2' }}</td>
-        </tr>
-        <tr>
-          <td>Indemnización</td>
-          <td>{{ resultado.indemnizacion | number:'1.2-2' }}</td>
-        </tr>
-        <tr>
-          <td>Vacaciones</td>
-          <td>{{ resultado.vacaciones | number:'1.2-2' }}</td>
-        </tr>
-        <tr>
-          <td>Aguinaldo</td>
-          <td>{{ resultado.aguinaldo | number:'1.2-2' }}</td>
-        </tr>
-        <tr>
-          <td>Bono 14</td>
-          <td>{{ resultado.bono14 | number:'1.2-2' }}</td>
-        </tr>
-        <tr>
-          <td>Ventajas económicas</td>
-          <td>{{ resultado.ventajasEconomicas | number:'1.2-2' }}</td>
-        </tr>
-        <tr class="total-row">
-          <td><strong>Total a pagar</strong></td>
-          <td><strong>{{ resultado.totalPagar | number:'1.2-2' }}</strong></td>
-        </tr>
-      </tbody>
-    </table>
-  </section>
-
-  <!-- Sin resultado aún -->
-  <section class="card" *ngIf="!resultado && !loadingCalculo">
-    <p>Selecciona un colaborador y una fecha de egreso para calcular la liquidación.</p>
-  </section>
+  <!-- Estado vacío -->
+  <div *ngIf="!loadingEmpleados && empleados.length === 0" class="empty-state">
+    <i class="icon">👥</i>
+    <h3>No hay empleados activos</h3>
+    <p>Para calcular liquidaciones, primero debe tener empleados registrados en estado activo.</p>
+    <a routerLink="/empleados" class="btn btn-primary">
+      <i class="icon">➕</i>
+      Ir a Gestión de Empleados
+    </a>
+  </div>
 </div>

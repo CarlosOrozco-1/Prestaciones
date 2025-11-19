@@ -1,17 +1,65 @@
+/* ============================
+   NAVEGACIÓN PRINCIPAL
+   ============================ */
 .top-nav {
-  background: #1976d2;
-  padding: 8px 16px;
+  background: linear-gradient(135deg, #1976d2, #1565c0);
+  padding: 0;
   display: flex;
-  gap: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .top-nav a {
-  color: #fff;
+  color: white;
   text-decoration: none;
+  padding: 16px 24px;
   font-size: 14px;
+  font-weight: 500;
+  border-bottom: 3px solid transparent;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.top-nav a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-bottom-color: rgba(255, 255, 255, 0.3);
 }
 
 .top-nav a.active {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-bottom-color: #fff;
   font-weight: 600;
-  text-decoration: underline;
+}
+
+.nav-icon {
+  font-size: 16px;
+}
+
+/* ============================
+   CONTENEDOR PRINCIPAL
+   ============================ */
+main {
+  min-height: calc(100vh - 60px);
+  background-color: #f8f9fa;
+}
+
+/* ============================
+   RESPONSIVE
+   ============================ */
+@media (max-width: 768px) {
+  .top-nav {
+    flex-direction: column;
+  }
+  
+  .top-nav a {
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-left: none;
+  }
+  
+  .top-nav a.active {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    border-left: 3px solid #fff;
+  }
 }

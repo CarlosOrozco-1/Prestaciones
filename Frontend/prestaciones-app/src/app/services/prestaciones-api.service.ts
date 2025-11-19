@@ -32,6 +32,23 @@ export interface CreateEmpleadoResponse {
   message: string;
 }
 
+export interface UpdateEmpleadoRequest {
+  dpi?: string;
+  nombres?: string;
+  apellidos?: string;
+  fechaIngreso?: string;
+  fechaEgreso?: string | null;
+  salarioBase?: number;
+  promComisiones?: number | null;
+  bonoIncentivo?: number | null;
+  estado?: string;
+}
+
+export interface ApiResponse {
+  message: string;
+  ok: boolean;
+}
+
 export interface CalcularLiquidacionRequest {
   idEmpleado: number;
   fechaEgreso: string;   // ISO string
@@ -79,6 +96,14 @@ export class PrestacionesApiService {
 
   createEmpleado(body: CreateEmpleadoRequest): Observable<CreateEmpleadoResponse> {
     return this.http.post<CreateEmpleadoResponse>(`${this.baseUrl}/api/empleados`, body);
+  }
+
+  updateEmpleado(id: number, body: UpdateEmpleadoRequest): Observable<ApiResponse> {
+    return this.http.put<ApiResponse>(`${this.baseUrl}/api/empleados/${id}`, body);
+  }
+
+  deleteEmpleado(id: number): Observable<ApiResponse> {
+    return this.http.delete<ApiResponse>(`${this.baseUrl}/api/empleados/${id}`);
   }
 
   // ==============================

@@ -1,6 +1,14 @@
 <nav class="top-nav">
-  <a routerLink="/empleados" routerLinkActive="active">Empleados</a>
-  <a routerLink="/liquidaciones" routerLinkActive="active">Liquidaciones</a>
+  <a routerLink="/empleados" routerLinkActive="active">
+    <span class="nav-icon">👥</span>
+    Gestión de Empleados
+  </a>
+  <a routerLink="/liquidaciones" routerLinkActive="active">
+    <span class="nav-icon">💰</span>
+    Cálculo de Liquidaciones
+  </a>
 </nav>
 
-<router-outlet></router-outlet>
+<main>
+  <router-outlet></router-outlet>
+</main>
