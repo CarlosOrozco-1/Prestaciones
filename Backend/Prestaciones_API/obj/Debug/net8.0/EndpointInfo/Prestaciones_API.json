@@ -124,6 +124,41 @@
           }
         }
       }
+    },
+    "/api/liquidaciones/historial": {
+      "get": {
+        "tags": [
+          "Prestaciones_API"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/liquidaciones/historial/{idEmpleado}": {
+      "get": {
+        "tags": [
+          "Prestaciones_API"
+        ],
+        "parameters": [
+          {
+            "name": "idEmpleado",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
     }
   },
   "components": {

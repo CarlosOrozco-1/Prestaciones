@@ -21,4 +21,21 @@
         decimal VentajasEconomicas,
         decimal TotalPagar
     );
+
+    // DTO para el historial de liquidaciones
+    public record HistorialLiquidacionDto(
+        int IdLiquidacion,
+        int IdEmpleado,
+        string NombreCompleto,
+        DateTime FechaCalculo,
+        DateTime FechaEgreso,
+        int DiasRelacion,
+        decimal SalarioDevengado,
+        decimal Indemnizacion,
+        decimal Vacaciones,
+        decimal Aguinaldo,
+        decimal Bono14,
+        decimal VentajasEconomicas,
+        decimal TotalPagar
+    );
 }

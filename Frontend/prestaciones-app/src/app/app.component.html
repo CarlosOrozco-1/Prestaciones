@@ -1,4 +1,8 @@
 <nav class="top-nav">
+  <a routerLink="/inicio" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+    <span class="nav-icon">🏠</span>
+    Inicio
+  </a>
   <a routerLink="/empleados" routerLinkActive="active">
     <span class="nav-icon">👥</span>
     Gestión de Empleados
@@ -6,6 +10,10 @@
   <a routerLink="/liquidaciones" routerLinkActive="active">
     <span class="nav-icon">💰</span>
     Cálculo de Liquidaciones
+  </a>
+  <a routerLink="/historial" routerLinkActive="active">
+    <span class="nav-icon">📊</span>
+    Historial
   </a>
 </nav>
 

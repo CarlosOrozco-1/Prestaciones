@@ -88,3 +88,4 @@ C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Pres
 C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\obj\Debug\net8.0\Prestaciones_API.genruntimeconfig.cache
 C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\obj\Debug\net8.0\ref\Prestaciones_API.dll
 C:\Users\Carlos Orozco\Documents\Proyecto-prestaciones\Prestaciones\Backend\Prestaciones_API\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
+D:\Carlos Orozco DTI\Documents\Proyecto-prestaciones\Backend\Prestaciones_API\obj\Debug\net8.0\Prestaciones_API.sourcelink.json

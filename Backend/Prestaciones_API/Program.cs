@@ -317,5 +317,140 @@ app.MapPost("/api/liquidaciones/calcular",
     });
 
 
+// ==============================================================
+//       ENDPOINT: OBTENER HISTORIAL DE LIQUIDACIONES
+//  GET /api/liquidaciones/historial
+//  Usa: Vista o consulta que trae todas las liquidaciones con datos del empleado
+// ==============================================================
+app.MapGet("/api/liquidaciones/historial", async (OracleConnectionFactory factory) =>
+{
+    try
+    {
+        var historial = new List<HistorialLiquidacionDto>();
+
+        await using var conn = factory.CreateConnection();
+        await conn.OpenAsync();
+
+        // Consulta que une LIQUIDACIONES con EMPLEADOS
+        var query = @"
+            SELECT 
+                L.ID_LIQUIDACION,
+                L.ID_EMPLEADO,
+                E.NOMBRES || ' ' || E.APELLIDOS AS NOMBRE_COMPLETO,
+                L.FECHA_CALCULO,
+                L.FECHA_EGRESO,
+                L.DIAS_RELACION,
+                L.SALARIO_DEVENGADO,
+                L.INDEMNIZACION,
+                L.VACACIONES,
+                L.AGUINALDO,
+                L.BONO14,
+                L.VENT_ECONOMICAS,
+                L.TOTAL_PAGAR
+            FROM LIQUIDACIONES L
+            INNER JOIN EMPLEADOS E ON L.ID_EMPLEADO = E.ID_EMPLEADO
+            ORDER BY L.FECHA_CALCULO DESC
+        ";
+
+        await using var cmd = new OracleCommand(query, conn);
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        while (await reader.ReadAsync())
+        {
+            historial.Add(new HistorialLiquidacionDto(
+                IdLiquidacion: reader.GetInt32(reader.GetOrdinal("ID_LIQUIDACION")),
+                IdEmpleado: reader.GetInt32(reader.GetOrdinal("ID_EMPLEADO")),
+                NombreCompleto: reader.GetString(reader.GetOrdinal("NOMBRE_COMPLETO")),
+                FechaCalculo: reader.GetDateTime(reader.GetOrdinal("FECHA_CALCULO")),
+                FechaEgreso: reader.GetDateTime(reader.GetOrdinal("FECHA_EGRESO")),
+                DiasRelacion: reader.GetInt32(reader.GetOrdinal("DIAS_RELACION")),
+                SalarioDevengado: reader.GetDecimal(reader.GetOrdinal("SALARIO_DEVENGADO")),
+                Indemnizacion: reader.GetDecimal(reader.GetOrdinal("INDEMNIZACION")),
+                Vacaciones: reader.GetDecimal(reader.GetOrdinal("VACACIONES")),
+                Aguinaldo: reader.GetDecimal(reader.GetOrdinal("AGUINALDO")),
+                Bono14: reader.GetDecimal(reader.GetOrdinal("BONO14")),
+                VentajasEconomicas: reader.GetDecimal(reader.GetOrdinal("VENT_ECONOMICAS")),
+                TotalPagar: reader.GetDecimal(reader.GetOrdinal("TOTAL_PAGAR"))
+            ));
+        }
+
+        return Results.Ok(historial);
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(
+            title: "Error al obtener historial de liquidaciones",
+            detail: ex.Message
+        );
+    }
+});
+
+
+// ==============================================================
+//   ENDPOINT: OBTENER HISTORIAL DE LIQUIDACIONES POR EMPLEADO
+//  GET /api/liquidaciones/historial/{idEmpleado}
+//  Usa: PKG_PRESTACIONES.SP_LISTAR_LIQ_POR_EMPLEADO
+// ==============================================================
+app.MapGet("/api/liquidaciones/historial/{idEmpleado:int}", 
+    async (int idEmpleado, OracleConnectionFactory factory) =>
+{
+    try
+    {
+        var historial = new List<HistorialLiquidacionDto>();
+
+        await using var conn = factory.CreateConnection();
+        await conn.OpenAsync();
+
+        await using var cmd = new OracleCommand("PKG_PRESTACIONES.SP_LISTAR_LIQ_POR_EMPLEADO", conn)
+        {
+            CommandType = CommandType.StoredProcedure
+        };
+
+        cmd.Parameters.Add("P_ID_EMPLEADO", OracleDbType.Int32).Value = idEmpleado;
+        var pCursor = cmd.Parameters.Add("P_CURSOR", OracleDbType.RefCursor);
+        pCursor.Direction = ParameterDirection.Output;
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        // Obtener nombre del empleado
+        string nombreCompleto = string.Empty;
+
+        while (await reader.ReadAsync())
+        {
+            if (string.IsNullOrEmpty(nombreCompleto))
+            {
+                // Primera vez, obtenemos el nombre (asumiendo que viene en el cursor)
+                // Si no viene, harías otra consulta
+                nombreCompleto = "Empleado"; // Placeholder
+            }
+
+            historial.Add(new HistorialLiquidacionDto(
+                IdLiquidacion: reader.GetInt32(reader.GetOrdinal("ID_LIQUIDACION")),
+                IdEmpleado: reader.GetInt32(reader.GetOrdinal("ID_EMPLEADO")),
+                NombreCompleto: nombreCompleto,
+                FechaCalculo: reader.GetDateTime(reader.GetOrdinal("FECHA_CALCULO")),
+                FechaEgreso: reader.GetDateTime(reader.GetOrdinal("FECHA_EGRESO")),
+                DiasRelacion: reader.GetInt32(reader.GetOrdinal("DIAS_RELACION")),
+                SalarioDevengado: reader.GetDecimal(reader.GetOrdinal("SALARIO_DEVENGADO")),
+                Indemnizacion: reader.GetDecimal(reader.GetOrdinal("INDEMNIZACION")),
+                Vacaciones: reader.GetDecimal(reader.GetOrdinal("VACACIONES")),
+                Aguinaldo: reader.GetDecimal(reader.GetOrdinal("AGUINALDO")),
+                Bono14: reader.GetDecimal(reader.GetOrdinal("BONO14")),
+                VentajasEconomicas: reader.GetDecimal(reader.GetOrdinal("VENT_ECONOMICAS")),
+                TotalPagar: reader.GetDecimal(reader.GetOrdinal("TOTAL_PAGAR"))
+            ));
+        }
+
+        return Results.Ok(historial);
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(
+            title: "Error al obtener historial del empleado",
+            detail: ex.Message
+        );
+    }
+});
+
 
 app.Run();

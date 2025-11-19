@@ -1,0 +1,96 @@
+<div class="inicio-container">
+  <div class="hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title">Sistema de Gestión de Prestaciones</h1>
+      <p class="hero-subtitle">Administra empleados y calcula liquidaciones de forma eficiente</p>
+      <div class="hero-stats">
+        <div class="stat-card">
+          <span class="stat-icon">👥</span>
+          <div class="stat-info">
+            <h3>Empleados</h3>
+            <p>Gestión completa</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon">💰</span>
+          <div class="stat-info">
+            <h3>Liquidaciones</h3>
+            <p>Cálculos precisos</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon">📊</span>
+          <div class="stat-info">
+            <h3>Reportes</h3>
+            <p>En tiempo real</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modules-section">
+    <h2 class="section-title">Módulos del Sistema</h2>
+    <div class="modules-grid">
+      <div class="module-card" (click)="navigateTo('/empleados')">
+        <div class="module-icon">👥</div>
+        <h3 class="module-title">Gestión de Empleados</h3>
+        <p class="module-description">
+          Administra la información de tus empleados, incluyendo datos personales, 
+          contratos y historial laboral.
+        </p>
+        <div class="module-features">
+          <span class="feature-tag">✓ Registro de empleados</span>
+          <span class="feature-tag">✓ Edición de datos</span>
+          <span class="feature-tag">✓ Consulta rápida</span>
+        </div>
+        <button class="module-button">Acceder al módulo →</button>
+      </div>
+
+      <div class="module-card" (click)="navigateTo('/liquidaciones')">
+        <div class="module-icon">💰</div>
+        <h3 class="module-title">Cálculo de Liquidaciones</h3>
+        <p class="module-description">
+          Realiza cálculos precisos de liquidaciones laborales según la normativa vigente 
+          y genera reportes detallados.
+        </p>
+        <div class="module-features">
+          <span class="feature-tag">✓ Cálculo automático</span>
+          <span class="feature-tag">✓ Normativa actualizada</span>
+          <span class="feature-tag">✓ Reportes PDF</span>
+        </div>
+        <button class="module-button">Acceder al módulo →</button>
+      </div>
+
+      <div class="module-card" (click)="navigateTo('/historial')">
+        <div class="module-icon">📊</div>
+        <h3 class="module-title">Historial de Liquidaciones</h3>
+        <p class="module-description">
+          Consulta todas las liquidaciones generadas en el sistema con información 
+          detallada de cada cálculo realizado.
+        </p>
+        <div class="module-features">
+          <span class="feature-tag">✓ Historial completo</span>
+          <span class="feature-tag">✓ Búsqueda avanzada</span>
+          <span class="feature-tag">✓ Detalle de cálculos</span>
+        </div>
+        <button class="module-button">Acceder al módulo →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-section">
+    <div class="info-card">
+      <h3>🚀 Acceso Rápido</h3>
+      <p>Navega fácilmente entre los módulos usando el menú superior o los botones de esta página.</p>
+    </div>
+    <div class="info-card">
+      <h3>🔒 Seguro y Confiable</h3>
+      <p>Toda la información se almacena de forma segura con respaldo automático.</p>
+    </div>
+    <div class="info-card">
+      <h3>📱 Responsive</h3>
+      <p>Accede desde cualquier dispositivo: computadora, tablet o móvil.</p>
+    </div>
+  </div>
+</div>

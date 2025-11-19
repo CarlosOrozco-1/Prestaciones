@@ -1,0 +1,174 @@
+<div class="historial-container">
+  <div class="header-section">
+    <h1 class="page-title">
+      <span class="icon">📊</span>
+      Historial de Liquidaciones
+    </h1>
+    <p class="page-subtitle">Consulta todas las liquidaciones generadas en el sistema</p>
+  </div>
+
+  <!-- Barra de búsqueda -->
+  <div class="search-section">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input 
+        type="text" 
+        [(ngModel)]="searchTerm" 
+        (input)="filtrarHistorial()" 
+        placeholder="Buscar por nombre, ID empleado o ID liquidación..."
+        class="search-input"
+      />
+    </div>
+    <button class="refresh-btn" (click)="cargarHistorial()" [disabled]="loading">
+      <span class="btn-icon">🔄</span>
+      Actualizar
+    </button>
+  </div>
+
+  <!-- Estado de carga -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Cargando historial...</p>
+  </div>
+
+  <!-- Mensaje de error -->
+  <div *ngIf="error" class="error-state">
+    <span class="error-icon">⚠️</span>
+    <p>{{ error }}</p>
+    <button class="retry-btn" (click)="cargarHistorial()">Reintentar</button>
+  </div>
+
+  <!-- Tabla de historial -->
+  <div *ngIf="!loading && !error" class="table-container">
+    <div *ngIf="historialFiltrado.length === 0" class="empty-state">
+      <span class="empty-icon">📄</span>
+      <h3>No se encontraron resultados</h3>
+      <p>{{ searchTerm ? 'Intenta con otros términos de búsqueda' : 'Aún no hay liquidaciones registradas' }}</p>
+    </div>
+
+    <table *ngIf="historialFiltrado.length > 0" class="historial-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Empleado</th>
+          <th>Fecha Cálculo</th>
+          <th>Fecha Egreso</th>
+          <th>Días</th>
+          <th>Total a Pagar</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of historialFiltrado" class="table-row">
+          <td class="id-cell">#{{ item.idLiquidacion }}</td>
+          <td class="empleado-cell">
+            <div class="empleado-info">
+              <strong>{{ item.nombreCompleto }}</strong>
+              <span class="empleado-id">ID: {{ item.idEmpleado }}</span>
+            </div>
+          </td>
+          <td>{{ formatDate(item.fechaCalculo) }}</td>
+          <td>{{ formatDate(item.fechaEgreso) }}</td>
+          <td class="dias-cell">{{ item.diasRelacion }}</td>
+          <td class="total-cell">{{ formatCurrency(item.totalPagar) }}</td>
+          <td>
+            <button class="view-btn" (click)="verDetalle(item)">
+              <span>👁️</span>
+              Ver Detalle
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="historialFiltrado.length > 0" class="table-footer">
+      <p>Total de registros: <strong>{{ historialFiltrado.length }}</strong></p>
+    </div>
+  </div>
+
+  <!-- Modal de detalle -->
+  <div *ngIf="liquidacionSeleccionada" class="modal-overlay" (click)="cerrarDetalle()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>
+          <span class="modal-icon">📝</span>
+          Detalle de Liquidación #{{ liquidacionSeleccionada.idLiquidacion }}
+        </h2>
+        <button class="close-btn" (click)="cerrarDetalle()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="detalle-section">
+          <h3 class="section-title">Información del Empleado</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <label>Nombre Completo:</label>
+              <span>{{ liquidacionSeleccionada.nombreCompleto }}</span>
+            </div>
+            <div class="info-item">
+              <label>ID Empleado:</label>
+              <span>{{ liquidacionSeleccionada.idEmpleado }}</span>
+            </div>
+            <div class="info-item">
+              <label>Fecha de Egreso:</label>
+              <span>{{ formatDate(liquidacionSeleccionada.fechaEgreso) }}</span>
+            </div>
+            <div class="info-item">
+              <label>Días de Relación:</label>
+              <span>{{ liquidacionSeleccionada.diasRelacion }} días</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="detalle-section">
+          <h3 class="section-title">Conceptos de Liquidación</h3>
+          <div class="conceptos-list">
+            <div class="concepto-item">
+              <span class="concepto-label">Salario Devengado:</span>
+              <span class="concepto-value">{{ formatCurrency(liquidacionSeleccionada.salarioDevengado) }}</span>
+            </div>
+            <div class="concepto-item">
+              <span class="concepto-label">Indemnización:</span>
+              <span class="concepto-value">{{ formatCurrency(liquidacionSeleccionada.indemnizacion) }}</span>
+            </div>
+            <div class="concepto-item">
+              <span class="concepto-label">Vacaciones:</span>
+              <span class="concepto-value">{{ formatCurrency(liquidacionSeleccionada.vacaciones) }}</span>
+            </div>
+            <div class="concepto-item">
+              <span class="concepto-label">Aguinaldo:</span>
+              <span class="concepto-value">{{ formatCurrency(liquidacionSeleccionada.aguinaldo) }}</span>
+            </div>
+            <div class="concepto-item">
+              <span class="concepto-label">Bono 14:</span>
+              <span class="concepto-value">{{ formatCurrency(liquidacionSeleccionada.bono14) }}</span>
+            </div>
+            <div class="concepto-item">
+              <span class="concepto-label">Ventajas Económicas:</span>
+              <span class="concepto-value">{{ formatCurrency(liquidacionSeleccionada.ventajasEconomicas) }}</span>
+            </div>
+            <div class="concepto-item total">
+              <span class="concepto-label">TOTAL A PAGAR:</span>
+              <span class="concepto-value">{{ formatCurrency(liquidacionSeleccionada.totalPagar) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="detalle-section">
+          <div class="info-item">
+            <label>Fecha de Cálculo:</label>
+            <span>{{ formatDate(liquidacionSeleccionada.fechaCalculo) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="cerrarDetalle()">Cerrar</button>
+        <button class="btn-primary" onclick="window.print()">
+          <span>🖨️</span>
+          Imprimir
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
