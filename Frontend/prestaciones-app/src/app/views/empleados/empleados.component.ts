@@ -249,6 +249,11 @@ export class EmpleadosComponent implements OnInit {
     return !!ctrl && ctrl.touched && ctrl.hasError(error);
   }
 
+  /**
+   * Formatea un número como moneda guatemalteca (GTQ)
+   * @param amount - Monto a formatear
+   * @returns String con formato de moneda (Ej: Q3,500.00)
+   */
   formatCurrency(amount: number): string {
     return new Intl.NumberFormat('es-GT', {
       style: 'currency',
@@ -256,8 +261,29 @@ export class EmpleadosComponent implements OnInit {
     }).format(amount);
   }
 
+  /**
+   * Formatea una fecha en formato legible
+   * @param dateString - Fecha en formato ISO
+   * @returns Fecha formateada o 'N/A' si no existe
+   */
   formatDate(dateString: string): string {
     if (!dateString) return 'N/A';
     return new Date(dateString).toLocaleDateString('es-GT');
+  }
+
+  /**
+   * Calcula el Salario Devengado Total de un empleado
+   * Salario Devengado (SD) = Salario Base + Comisiones + Bono Incentivo
+   * Este es el salario que se usa como base para cálculos de prestaciones
+   * @param empleado - Objeto empleado con salarios
+   * @returns Monto total del salario devengado
+   */
+  calcularSalarioDevengado(empleado: Empleado): number {
+    const salarioBase = empleado.salarioBase || 0;
+    const comisiones = empleado.promComisiones || 0;
+    const bono = empleado.bonoIncentivo || 0;
+    
+    // SD = Salario Base + Comisiones + Bono Incentivo
+    return salarioBase + comisiones + bono;
   }
 }

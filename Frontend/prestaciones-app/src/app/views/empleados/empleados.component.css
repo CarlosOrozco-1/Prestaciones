@@ -284,6 +284,29 @@
 }
 
 /* ============================
+   COLUMNAS ESPECIALES
+   ============================ */
+/* Resaltar la columna de Salario Devengado */
+.empleados-table th.highlight {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  font-weight: 700;
+}
+
+/* Estilo para la celda de salario devengado total */
+.empleados-table .total-devengado {
+  background-color: #f5f9ff;
+  font-weight: 700;
+  color: #1976d2;
+  font-size: 15px;
+}
+
+/* Efecto hover en la fila para destacar el total */
+.empleados-table tr:hover .total-devengado {
+  background-color: #e3f2fd;
+}
+
+/* ============================
    ESTADOS Y ACCIONES
    ============================ */
 .status {

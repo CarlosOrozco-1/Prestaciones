@@ -99,6 +99,7 @@ CREATE OR REPLACE PACKAGE BODY PKG_PRESTACIONES AS
 
   --------------------------------------------------------
   -- 2) CÁLCULO Y REGISTRO DE LIQUIDACIONES
+  -- Fórmulas basadas en legislación guatemalteca
   --------------------------------------------------------
   PROCEDURE SP_CALCULAR_LIQ_EMPLEADO (
     P_ID_EMPLEADO  IN EMPLEADOS.ID_EMPLEADO%TYPE,
@@ -108,7 +109,11 @@ CREATE OR REPLACE PACKAGE BODY PKG_PRESTACIONES AS
     V_EMP EMPLEADOS%ROWTYPE;
 
     V_DIAS_RELACION      NUMBER;
+    V_ANIOS_COMPLETOS    NUMBER;
+    V_DIAS_ULTIMO_ANIO   NUMBER;
+    V_SALARIO_ORDINARIO  NUMBER(10,2);
     V_SALARIO_DEVENGADO  NUMBER(10,2);
+    V_SD_CON_INCREMENTO  NUMBER(10,2); -- SD + (SD/6)
 
     V_INDEMNIZACION      NUMBER(10,2);
     V_VACACIONES         NUMBER(10,2);
@@ -117,6 +122,7 @@ CREATE OR REPLACE PACKAGE BODY PKG_PRESTACIONES AS
     V_VENT_ECONOMICAS    NUMBER(10,2);
     V_TOTAL_PAGAR        NUMBER(10,2);
 
+    V_DIAS_VACACIONES    NUMBER; -- Días de vacaciones según años trabajados
     V_ID_LIQUIDACION     LIQUIDACIONES.ID_LIQUIDACION%TYPE;
   BEGIN
     -- 1) Leer datos del empleado
@@ -125,43 +131,100 @@ CREATE OR REPLACE PACKAGE BODY PKG_PRESTACIONES AS
       FROM EMPLEADOS
      WHERE ID_EMPLEADO = P_ID_EMPLEADO;
 
-    -- 2) Días de relación laboral
+    -- 2) Días de relación laboral (R.L.)
+    -- Incluye el día de ingreso (+1)
     V_DIAS_RELACION := FN_DIAS_RELACION(V_EMP.FECHA_INGRESO, P_FECHA_EGRESO);
+    
+    -- Años completos trabajados
+    V_ANIOS_COMPLETOS := TRUNC(V_DIAS_RELACION / 365);
+    
+    -- Días trabajados en el último año (para aguinaldo y bono 14)
+    V_DIAS_ULTIMO_ANIO := MOD(V_DIAS_RELACION, 365);
 
-    -- 3) Salario devengado base (SD)
+    -- 3) Salario Ordinario (SO) - Base sin comisiones ni bonos
+    V_SALARIO_ORDINARIO := NVL(V_EMP.SALARIO_BASE, 0);
+
+    -- 4) Salario Devengado (SD) - Incluye comisiones y bonificaciones
+    -- SD = Salario Ordinario + Comisiones + Bono Incentivo
     V_SALARIO_DEVENGADO :=
-        NVL(V_EMP.SALARIO_BASE,0)
-      + NVL(V_EMP.PROM_COMISIONES,0)
-      + NVL(V_EMP.BONO_INCENTIVO,0);
+        V_SALARIO_ORDINARIO
+      + NVL(V_EMP.PROM_COMISIONES, 0)
+      + NVL(V_EMP.BONO_INCENTIVO, 0);
+
+    -- 5) Salario Devengado con incremento legal (SD + SD/6)
+    -- Para indemnización se agrega 1/6 del salario devengado
+    V_SD_CON_INCREMENTO := V_SALARIO_DEVENGADO + (V_SALARIO_DEVENGADO / 6);
 
     ----------------------------------------------------
-    -- 4) FÓRMULAS SIMPLIFICADAS (ajustables después)
+    -- FÓRMULAS SEGÚN LEGISLACIÓN GUATEMALTECA
     ----------------------------------------------------
-    -- Indemnización: 1 salario por año completo trabajado
-    V_INDEMNIZACION := TRUNC(V_DIAS_RELACION / 365) * V_SALARIO_DEVENGADO;
 
-    -- Vacaciones: supuesto 15 días por año (15/30 salarios)
-    V_VACACIONES := (V_DIAS_RELACION / 365) * (15 / 30) * V_SALARIO_DEVENGADO;
+    -- ==================================================
+    -- INDEMNIZACIÓN POR TIEMPO DE SERVICIO
+    -- Fórmula: (SD + SD/6) x R.L. ÷ 365 días
+    -- Fundamento Legal: Artículo 82 Código de Trabajo
+    -- ==================================================
+    V_INDEMNIZACION := V_SD_CON_INCREMENTO * (V_DIAS_RELACION / 365);
 
-    -- Aguinaldo: 1 salario por año proporcional
-    V_AGUINALDO := (V_DIAS_RELACION / 365) * V_SALARIO_DEVENGADO;
+    -- ==================================================
+    -- VACACIONES
+    -- Fórmula: SD ÷ 30 x DHC x TPP ÷ 365 días
+    -- DHC = Días hábiles que correspondan según años trabajados
+    -- Escala de vacaciones en Guatemala:
+    --   1-5 años: 15 días
+    --   5+ años: 15 días + 1 día por cada año adicional (máximo 22 días)
+    -- Fundamento Legal: Artículos 130-137 Código de Trabajo
+    -- ==================================================
+    IF V_ANIOS_COMPLETOS < 5 THEN
+      V_DIAS_VACACIONES := 15;
+    ELSIF V_ANIOS_COMPLETOS >= 5 AND V_ANIOS_COMPLETOS < 12 THEN
+      V_DIAS_VACACIONES := 15 + (V_ANIOS_COMPLETOS - 4); -- +1 por cada año después de 5
+    ELSE
+      V_DIAS_VACACIONES := 22; -- Máximo 22 días
+    END IF;
+    
+    -- Cálculo proporcional de vacaciones
+    V_VACACIONES := (V_SALARIO_DEVENGADO / 30) * V_DIAS_VACACIONES * (V_DIAS_ULTIMO_ANIO / 365);
 
-    -- Bono 14: 1 salario por año proporcional
-    V_BONO14 := (V_DIAS_RELACION / 365) * V_SALARIO_DEVENGADO;
+    -- ==================================================
+    -- AGUINALDO
+    -- Fórmula: SD x TPP ÷ 365 días
+    -- TPP = Tiempo pendiente de pago en días (del último año)
+    -- Fundamento Legal: Artículo 102 Constitución, Decreto 76-78
+    -- ==================================================
+    V_AGUINALDO := V_SALARIO_DEVENGADO * (V_DIAS_ULTIMO_ANIO / 365);
 
-    -- Ventajas económicas: 42.86 % del salario devengado (ejemplo)
-    V_VENT_ECONOMICAS := V_SALARIO_DEVENGADO * 0.4286;
+    -- ==================================================
+    -- BONO 14 (BONIFICACIÓN ANUAL DECRETO 42-92)
+    -- Fórmula: (Salario mensual ÷ 365) × Días laborados
+    -- Es la misma base que aguinaldo (salario devengado)
+    -- TPP = Tiempo pendiente de pago en días (del último año)
+    -- Fundamento Legal: Decreto 42-92, Artículo 1o. Convenio 95
+    -- Ejemplo: (3,625 ÷ 365) × 43 = 9.93 × 43 = Q 426.99
+    -- ==================================================
+    V_BONO14 := V_SALARIO_DEVENGADO * (V_DIAS_ULTIMO_ANIO / 365);
 
-    -- Total a pagar
+    -- ==================================================
+    -- VENTAJAS ECONÓMICAS
+    -- Fórmula: SD x 42.86% x R.L. ÷ 365 días
+    -- 42.86% = 30/70 (regla de tres para ventajas económicas)
+    -- Fundamento Legal: Artículos 90, 93, 88 Código de Trabajo
+    --                   Artículo 1 Convenio 95
+    -- ==================================================
+    V_VENT_ECONOMICAS := V_SALARIO_DEVENGADO * 0.4286 * (V_DIAS_RELACION / 365);
+
+    -- ==================================================
+    -- TOTAL A PAGAR
+    -- ==================================================
     V_TOTAL_PAGAR :=
-        NVL(V_INDEMNIZACION,0)
-      + NVL(V_VACACIONES,0)
-      + NVL(V_AGUINALDO,0)
-      + NVL(V_BONO14,0)
-      + NVL(V_VENT_ECONOMICAS,0);
+        NVL(V_INDEMNIZACION, 0)
+      + NVL(V_VACACIONES, 0)
+      + NVL(V_AGUINALDO, 0)
+      + NVL(V_BONO14, 0)
+      + NVL(V_VENT_ECONOMICAS, 0);
 
     ----------------------------------------------------
-    -- 5) Insertar en LIQUIDACIONES
+    -- Insertar en LIQUIDACIONES
     ----------------------------------------------------
     INSERT INTO LIQUIDACIONES (
       ID_EMPLEADO,
@@ -189,7 +252,7 @@ CREATE OR REPLACE PACKAGE BODY PKG_PRESTACIONES AS
     RETURNING ID_LIQUIDACION INTO V_ID_LIQUIDACION;
 
     ----------------------------------------------------
-    -- 6) Devolver el registro recién creado
+    -- Devolver el registro recién creado
     ----------------------------------------------------
     OPEN P_CURSOR FOR
       SELECT *

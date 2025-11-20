@@ -175,33 +175,60 @@
           <th>Fecha Ingreso</th>
           <th>Fecha Egreso</th>
           <th>Salario Base</th>
+          <th>Comisiones</th>
+          <th>Bono Incentivo</th>
+          <th class="highlight">Salario Devengado</th>
           <th>Estado</th>
           <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let empleado of empleados">
+          <!-- DPI del empleado -->
           <td>{{ empleado.dpi }}</td>
+          
+          <!-- Nombre completo -->
           <td>{{ empleado.nombres }} {{ empleado.apellidos }}</td>
+          
+          <!-- Fechas de ingreso y egreso -->
           <td>{{ formatDate(empleado.fechaIngreso) }}</td>
           <td>{{ formatDate(empleado.fechaEgreso || '') }}</td>
+          
+          <!-- Salario Base -->
           <td>{{ formatCurrency(empleado.salarioBase) }}</td>
+          
+          <!-- Promedio de Comisiones -->
+          <td>{{ formatCurrency(empleado.promComisiones || 0) }}</td>
+          
+          <!-- Bono Incentivo -->
+          <td>{{ formatCurrency(empleado.bonoIncentivo || 0) }}</td>
+          
+          <!-- Salario Devengado Total (SD = Base + Comisiones + Bono) -->
+          <td class="total-devengado">
+            {{ formatCurrency(calcularSalarioDevengado(empleado)) }}
+          </td>
+          
+          <!-- Estado del empleado -->
           <td>
             <span [class]="'status ' + (empleado.estado === 'ACTIVO' ? 'active' : 'inactive')">
               {{ empleado.estado }}
             </span>
           </td>
+          
+          <!-- Botones de acciones -->
           <td class="actions">
             <button 
               class="btn btn-sm btn-secondary" 
               (click)="mostrarFormularioEditar(empleado)"
-              [disabled]="loading">
+              [disabled]="loading"
+              title="Editar empleado">
               <i class="icon">✏️</i>
             </button>
             <button 
               class="btn btn-sm btn-danger" 
               (click)="eliminarEmpleado(empleado)"
-              [disabled]="loading">
+              [disabled]="loading"
+              title="Eliminar empleado">
               <i class="icon">🗑️</i>
             </button>
           </td>
