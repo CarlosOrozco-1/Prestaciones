@@ -1,0 +1,434 @@
+<!-- Stepper Header -->
+<div class="stepper-container">
+  <div class="stepper-header">
+    <div class="step" 
+         [class.active]="currentStep >= 1" 
+         [class.completed]="currentStep > 1"
+         (click)="goToStep(1)">
+      <div class="step-number">1</div>
+      <div class="step-title">Tipo de Cálculo</div>
+    </div>
+    
+    <div class="step-connector" [class.active]="currentStep > 1"></div>
+    
+    <div class="step" 
+         [class.active]="currentStep >= 2" 
+         [class.completed]="currentStep > 2"
+         (click)="goToStep(2)">
+      <div class="step-number">2</div>
+      <div class="step-title">Datos Personales</div>
+    </div>
+    
+    <div class="step-connector" [class.active]="currentStep > 2"></div>
+    
+    <div class="step" 
+         [class.active]="currentStep >= 3" 
+         [class.completed]="currentStep > 3"
+         (click)="goToStep(3)">
+      <div class="step-number">3</div>
+      <div class="step-title">Datos Laborales</div>
+    </div>
+    
+    <div class="step-connector" [class.active]="currentStep > 3"></div>
+    
+    <div class="step" 
+         [class.active]="currentStep >= 4" 
+         [class.completed]="currentStep > 4">
+      <div class="step-number">4</div>
+      <div class="step-title">Resultado</div>
+    </div>
+  </div>
+</div>
+
+<!-- Main Content Steper-->
+<div class="calculator-container">
+  
+  <!-- Paso 1: Selección del Tipo de Prestación -->
+  <div class="step-content" *ngIf="currentStep === 1">
+    <div class="step-header">
+      <h2>Selecciona el tipo de prestación a calcular</h2>
+      <p>Elige el concepto que deseas calcular de forma manual</p>
+    </div>
+    
+    <form [formGroup]="tipoSeleccionForm" class="prestaciones-grid">
+      <div class="prestacion-card" 
+           *ngFor="let tipo of tiposPrestaciones"
+           [class.selected]="tipoSeleccionado?.id === tipo.id"
+           (click)="seleccionarTipo(tipo)">
+        
+        <div class="prestacion-icon">{{tipo.icon}}</div>
+        <h3>{{tipo.nombre}}</h3>
+        <p>{{tipo.descripcion}}</p>
+        
+        <div class="formula-preview">
+          <strong>Fórmula:</strong>
+          <code>{{tipo.formula}}</code>
+        </div>
+      </div>
+    </form>
+    
+    <div class="selected-info" *ngIf="tipoSeleccionado">
+      <div class="info-card">
+        <h4>{{tipoSeleccionado.icon}} {{tipoSeleccionado.nombre}} seleccionado</h4>
+        <p>{{tipoSeleccionado.descripcion}}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Paso 2: Datos Personales -->
+  <div class="step-content" *ngIf="currentStep === 2">
+    <div class="step-header">
+      <h2>Datos del Trabajador</h2>
+      <p>Ingresa la información personal del trabajador</p>
+    </div>
+    
+    <form [formGroup]="datosPersonalesForm" class="form-grid">
+      <div class="form-group">
+        <label for="nombreCompleto">Nombre Completo *</label>
+        <input 
+          type="text" 
+          id="nombreCompleto"
+          formControlName="nombreCompleto"
+          class="form-control"
+          placeholder="Ingrese el nombre completo">
+        <div class="error-message" 
+             *ngIf="datosPersonalesForm.get('nombreCompleto')?.errors?.['required'] && 
+                    datosPersonalesForm.get('nombreCompleto')?.touched">
+          El nombre completo es requerido
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="identificacion">Número de Identificación</label>
+        <input 
+          type="text" 
+          id="identificacion"
+          formControlName="identificacion"
+          class="form-control"
+          placeholder="Cédula, NIT, etc. (Opcional)">
+      </div>
+
+      <div class="form-group full-width">
+        <label for="cargo">Cargo *</label>
+        <input 
+          type="text" 
+          id="cargo"
+          formControlName="cargo"
+          class="form-control"
+          placeholder="Cargo o posición en la empresa">
+        <div class="error-message" 
+             *ngIf="datosPersonalesForm.get('cargo')?.errors?.['required'] && 
+                    datosPersonalesForm.get('cargo')?.touched">
+          El cargo es requerido
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Paso 3: Datos Laborales -->
+  <div class="step-content" *ngIf="currentStep === 3">
+    <div class="step-header">
+      <h2>Información Laboral y Salarial</h2>
+      <p>Ingresa los datos necesarios para el cálculo de {{tipoSeleccionado?.nombre}}</p>
+    </div>
+    
+    <form [formGroup]="datosLaboralesForm" class="form-grid">
+      <div class="form-group">
+        <label for="salarioBase">Salario Base Mensual *</label>
+        <input 
+          type="number" 
+          id="salarioBase"
+          formControlName="salarioBase"
+          class="form-control"
+          placeholder="0"
+          min="0">
+        <div class="error-message" 
+             *ngIf="datosLaboralesForm.get('salarioBase')?.errors && 
+                    datosLaboralesForm.get('salarioBase')?.touched">
+          <span *ngIf="datosLaboralesForm.get('salarioBase')?.errors?.['required']">
+            El salario base es requerido
+          </span>
+          <span *ngIf="datosLaboralesForm.get('salarioBase')?.errors?.['min']">
+            El salario debe ser mayor a 0
+          </span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="auxilioTransporte">Auxilio de Transporte</label>
+        <input 
+          type="number" 
+          id="auxilioTransporte"
+          formControlName="auxilioTransporte"
+          class="form-control"
+          placeholder="0"
+          min="0">
+      </div>
+
+      <div class="form-group">
+        <label for="fechaInicio">Fecha de Inicio *</label>
+        <input 
+          type="date" 
+          id="fechaInicio"
+          formControlName="fechaInicio"
+          class="form-control">
+        <div class="error-message" 
+             *ngIf="datosLaboralesForm.get('fechaInicio')?.errors?.['required'] && 
+                    datosLaboralesForm.get('fechaInicio')?.touched">
+          La fecha de inicio es requerida
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="fechaFin">Fecha de Fin *</label>
+        <input 
+          type="date" 
+          id="fechaFin"
+          formControlName="fechaFin"
+          class="form-control">
+        <div class="error-message" 
+             *ngIf="datosLaboralesForm.get('fechaFin')?.errors?.['required'] && 
+                    datosLaboralesForm.get('fechaFin')?.touched">
+          La fecha de fin es requerida
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="diasTrabajados">Días Trabajados</label>
+        <input 
+          type="number" 
+          id="diasTrabajados"
+          formControlName="diasTrabajados"
+          class="form-control"
+          readonly>
+        <small class="form-help">Se calcula automáticamente basado en las fechas</small>
+      </div>
+
+      <div class="form-group">
+        <label for="horasExtras">Horas Extras (Valor mensual)</label>
+        <input 
+          type="number" 
+          id="horasExtras"
+          formControlName="horasExtras"
+          class="form-control"
+          placeholder="0"
+          min="0">
+      </div>
+
+      <div class="form-group">
+        <label for="bonificaciones">Bonificaciones</label>
+        <input 
+          type="number" 
+          id="bonificaciones"
+          formControlName="bonificaciones"
+          class="form-control"
+          placeholder="0"
+          min="0">
+      </div>
+    </form>
+
+    <!-- Resumen de datos laborales -->
+    <div class="datos-resumen" *ngIf="datosLaboralesForm.get('salarioBase')?.value > 0">
+      <h4>Resumen Salarial</h4>
+      <div class="resumen-grid">
+        <div class="resumen-item">
+          <span>Salario Base:</span>
+          <span>{{formatCurrency(datosLaboralesForm.get('salarioBase')?.value || 0)}}</span>
+        </div>
+        <div class="resumen-item">
+          <span>Período:</span>
+          <span>{{formatDate(datosLaboralesForm.get('fechaInicio')?.value)}} - {{formatDate(datosLaboralesForm.get('fechaFin')?.value)}}</span>
+        </div>
+        <div class="resumen-item">
+          <span>Días trabajados:</span>
+          <span>{{datosLaboralesForm.get('diasTrabajados')?.value || 0}} días</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Paso 4: Resultado del Cálculo -->
+  <div class="step-content" *ngIf="currentStep === 4">
+    <div class="step-header">
+      <h2>Resultado del Cálculo</h2>
+      <p>Cálculo de {{tipoSeleccionado?.nombre}}</p>
+    </div>
+
+    <!-- Loading Estado -->
+    <div class="loading-container" *ngIf="isCalculating">
+      <div class="loading-spinner"></div>
+      <p>Realizando cálculo...</p>
+    </div>
+
+    <!-- Resultado -->
+    <div class="resultado-container" *ngIf="resultado && !isCalculating">
+      
+      <!-- Información del empleado -->
+      <div class="empleado-info">
+        <h3>👤 Información del Trabajador</h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="label">Nombre:</span>
+            <span class="value">{{resultado.detalles['nombreEmpleado']}}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Cargo:</span>
+            <span class="value">{{resultado.detalles['cargo']}}</span>
+          </div>
+          <div class="info-item" *ngIf="resultado.detalles['identificacion']">
+            <span class="label">Identificación:</span>
+            <span class="value">{{resultado.detalles['identificacion']}}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resultado principal -->
+      <div class="resultado-principal">
+        <h3>{{tipoSeleccionado?.icon}} {{resultado.concepto}}</h3>
+        <div class="valor-principal">
+          {{formatCurrency(resultado.valor)}}
+        </div>
+      </div>
+
+      <!-- NUEVO: Sección especial para vacaciones - Dos rubros -->
+      <div class="vacaciones-rubros" *ngIf="tipoSeleccionado?.id === 'vacaciones'">
+        <h4>📋 Rubros de Vacaciones según Código de Trabajo Guatemala</h4>
+        <div class="rubros-container">
+          <div class="rubro-card">
+            <div class="rubro-header">
+              <span class="rubro-icon">🏖️</span>
+              <h5>1. Días de Vacaciones</h5>
+            </div>
+            <div class="rubro-content">
+              <div class="rubro-valor">{{resultado.detalles['diasVacacionesProporcionales']}} días</div>
+              <p class="rubro-descripcion">
+                Días de descanso que corresponden al trabajador según el tiempo laborado.
+                Base legal: Artículo 130 Código de Trabajo de Guatemala.
+              </p>
+            </div>
+          </div>
+          
+          <div class="rubro-card">
+            <div class="rubro-header">
+              <span class="rubro-icon">💰</span>
+              <h5>2. Compensación por Vacaciones No Gozadas</h5>
+            </div>
+            <div class="rubro-content">
+              <div class="rubro-valor">{{formatCurrency(resultado.detalles['compensacionTotal'])}}</div>
+              <p class="rubro-descripcion">
+                Pago que debe recibir el trabajador si es despedido sin haber gozado sus vacaciones.
+                <strong>Fórmula:</strong> (Salario mensual ÷ 30 días) × Días de vacaciones no gozados.
+                Incluye compensación adicional del 50% por no goce efectivo.
+              </p>
+              <div class="rubro-desglose">
+                <div class="desglose-item">
+                  <span>Compensación básica:</span>
+                  <span>{{formatCurrency(resultado.detalles['compensacionBasica'])}}</span>
+                </div>
+                <div class="desglose-item">
+                  <span>Compensación por no goce (+50%):</span>
+                  <span>{{formatCurrency(resultado.detalles['compensacionAdicional'])}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- FIN: Sección especial para vacaciones -->
+
+      <!-- Fórmula utilizada -->
+      <div class="formula-container">
+        <h4>📐 Fórmula Utilizada</h4>
+        <div class="formula-card">
+          <div class="formula-math">{{resultado.formula}}</div>
+          <div class="formula-calculo">{{resultado.detalles['calculoDetallado']}}</div>
+        </div>
+      </div>
+
+      <!-- Detalles del cálculo -->
+      <div class="detalles-calculo">
+        <h4>🔍 Detalles del Cálculo</h4>
+        <div class="detalles-grid">
+          <div class="detalle-item" *ngIf="resultado.detalles['salarioBase']">
+            <span class="label">Salario Base:</span>
+            <span class="value">{{formatCurrency(resultado.detalles['salarioBase'])}}</span>
+          </div>
+          <!-- NUEVO: Mostrar salario diario calculado -->
+          <div class="detalle-item" *ngIf="resultado.detalles['salarioDiario']">
+            <span class="label">Salario Diario (÷30):</span>
+            <span class="value">{{formatCurrency(resultado.detalles['salarioDiario'])}}</span>
+          </div>
+          <div class="detalle-item" *ngIf="resultado.detalles['diasTrabajados']">
+            <span class="label">Días trabajados:</span>
+            <span class="value">{{resultado.detalles['diasTrabajados']}} días</span>
+          </div>
+          
+          <!-- NUEVO: Campos específicos para vacaciones mejoradas -->
+          <div class="detalle-item" *ngIf="resultado.detalles['diasVacacionesAnuales']">
+            <span class="label">Días vacaciones anuales:</span>
+            <span class="value">{{resultado.detalles['diasVacacionesAnuales']}} días</span>
+          </div>
+          <div class="detalle-item" *ngIf="resultado.detalles['diasVacacionesProporcionales']">
+            <span class="label">Días vacaciones proporcionales:</span>
+            <span class="value">{{resultado.detalles['diasVacacionesProporcionales']}} días</span>
+          </div>
+          <div class="detalle-item" *ngIf="resultado.detalles['compensacionBasica']">
+            <span class="label">Compensación básica:</span>
+            <span class="value">{{formatCurrency(resultado.detalles['compensacionBasica'])}}</span>
+          </div>
+          <div class="detalle-item" *ngIf="resultado.detalles['compensacionAdicional']">
+            <span class="label">Compensación por no goce (+50%):</span>
+            <span class="value">{{formatCurrency(resultado.detalles['compensacionAdicional'])}}</span>
+          </div>
+          <!-- FIN: Campos específicos para vacaciones -->
+          
+          <div class="detalle-item" *ngIf="resultado.detalles['diasVacaciones']">
+            <span class="label">Días de vacaciones:</span>
+            <span class="value">{{resultado.detalles['diasVacaciones']}} días</span>
+          </div>
+          <div class="detalle-item" *ngIf="resultado.detalles['anosServicio']">
+            <span class="label">Años de servicio:</span>
+            <span class="value">{{resultado.detalles['anosServicio'].toFixed(2)}} años</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nota legal -->
+      <div class="nota-legal">
+        <p><strong>⚠️ Nota importante:</strong> Este cálculo es referencial y se basa en la normativa laboral guatemalteca general. Para cálculos oficiales, consulte con un profesional en derecho laboral o recursos humanos, o consulte el Código de Trabajo de Guatemala.</p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Navegación del Stepper -->
+  <div class="stepper-navigation">
+    <button 
+      type="button" 
+      class="btn btn-secondary"
+      [disabled]="currentStep <= 1"
+      (click)="prevStep()">
+      ← Anterior
+    </button>
+
+    <div class="step-indicator">
+      Paso {{currentStep}} de {{maxSteps}}
+    </div>
+
+    <button 
+      type="button" 
+      class="btn btn-primary"
+      *ngIf="currentStep < maxSteps"
+      [disabled]="!isStepValid(currentStep)"
+      (click)="nextStep()">
+      Siguiente →
+    </button>
+
+    <button 
+      type="button" 
+      class="btn btn-success"
+      *ngIf="currentStep === maxSteps && resultado"
+      (click)="nuevoCalculo()">
+      Nuevo Cálculo
+    </button>
+  </div>
+</div>
